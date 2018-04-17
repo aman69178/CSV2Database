@@ -1,0 +1,121 @@
+/*
+Suppose csv file contains data like
+1,Aman,1231242
+2,Rohit,214114
+3,Manav.2342424
+	 */
+
+
+/*
+CREATE TABLE CSV_2_ORACLE
+(
+USER_ID NUMBER,
+USER_NAME VARCHAR(20),
+USER_CONTACT NUMBER
+)
+*/
+/*
+Following is code to insert data from csv to database
+*/
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
+
+
+ class DBConnection{
+
+public static Connection getConnection(){
+		Connection con=null;
+		try{
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","username","password");
+		}catch(Exception e){System.out.println(e);}
+		return con;
+	}
+}
+
+
+class CReader{
+String csvFile = "C:\\Java2\\Aman.csv";
+       BufferedReader br=null;
+        String line="" ;
+        String splitby = ",";
+
+ public CReader(BufferedReader reader){
+this.br=reader;
+}
+
+
+ public  void csv(){
+try {   
+ 
+Connection conn=DBConnection.getConnection();               
+PreparedStatement ps = null;
+                  ps = conn.prepareStatement("insert into CSV_2_ORACLE values(?,?,?)");
+
+        
+
+             
+            while ((line = br.readLine()) != null) {
+
+
+      String[] student = line.split(splitby);
+
+                 ps.setInt(1,Integer.parseInt(student[0]));
+
+                         ps.setString(2,student[1]);
+
+                       ps.setInt(3,Integer.parseInt(student[2]));
+                  ps.executeUpdate();
+
+                } 
+             }
+
+		 
+catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } 
+catch (IOException e) {
+            e.printStackTrace();
+        } 
+catch(SQLException e){
+ e.printStackTrace();
+      }
+
+finally {
+            if (br != null) {
+                try {
+                    br.close();
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+}
+
+  public class CSVReader2 {
+
+
+
+  public static void main(String[] args) {
+  
+ CSVReader2 a=new CSVReader2();
+try{
+ CReader ab=new CReader( new BufferedReader(new FileReader("C:\\Java2\\Aman.csv")));
+ab.csv(); 
+ }
+catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }        
+ 
+        
+}
+
+
+}
